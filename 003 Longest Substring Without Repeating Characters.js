@@ -28,8 +28,8 @@ var lengthOfLongestSubstring = function(s) {
 
                 if(i < sLen){ // i = sLen
                     subMinIndex +=  rptPos + 1;
-					subLen = i + 1 - subMinIndex;
-					subString = s.substr(subMinIndex, subLen);
+		    subLen = i + 1 - subMinIndex;
+		    subString = s.substr(subMinIndex, subLen);
                 } 
             }
         }
