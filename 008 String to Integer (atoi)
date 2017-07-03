@@ -1,0 +1,55 @@
+/**
+ * @param {string} str
+ * @return {number}
+ */
+var myAtoi = function(str) {
+    var strLen = str.length;
+    var negFlag = false;
+    var number = 0;
+    var numberFlag = false;
+    
+    if(strLen === 0){
+        return 0;
+    }
+    
+    for(var i = 0; i < strLen; i++){
+        if (!numberFlag){
+            if (str[i] === ' ' || str[i] == '\t' || str[i] === '\b' || str[i] === '\r' || str[i] === '\n'){
+            	continue;
+            }
+            
+            if(str[i] === '-' ){
+                negFlag = true;
+                numberFlag = true;
+                continue;
+        	}
+            
+            if(str[i] === '+'){
+               numberFlag = true;
+               continue;
+            }
+            
+        	if(str[i] < '0' || str[i] > '9'){
+            	return 0;
+        	}
+            
+            number = number *  10 + parseInt(str[i]);
+            numberFlag = true;
+        }else{
+            if(str[i] >= '0' && str[i] <= '9'){
+                number = number * 10 + parseInt(str[i]);
+            }else{
+                break;
+            }
+        }  
+    }  
+    number =  negFlag && number > 0? -number: number;
+    if(number > 2147483647 ){
+        return 2147483647;
+	}else if(number < -2147483648){
+        return -2147483648;
+    }else{
+        return number;
+    }
+    
+};
