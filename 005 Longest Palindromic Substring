@@ -1,0 +1,161 @@
+   //最长回文字串
+   //1.暴力法 
+   //时间复杂度：O(n3)
+  function baoli(s){
+		var len = s.length;
+		var subStr = '';
+		var longestPalindrome = '';
+		var longestSubLen = 0;
+		
+		for(var i = 0 ; i < len; i++){
+			for(var j = i + 1; j < len; j++){
+				subStr = s.slice(i,j+1);
+				if(isPalindrome(subStr)){
+					if(j - i + 1 > longestSubLen ){
+						longestSubLen = j - i + 1;
+						longestPalindrome = subStr;
+					}
+				}
+			}	
+		}
+		
+		return longestPalindrome;
+   }
+   
+   //2.动态规划法
+   //原理： p[i,j]是回文，则p[i+1,j-1]也是回文
+   //需要额外的空间O（n2)，算法复杂度也是O(n2)
+   //定义二维数组p[i][j], 
+   //首先定义状态方程和转移方程：
+	//P[i,j]=0表示子串[i,j]不是回文串。
+	//P[i,j]=1表示子串[i,j]是回文串。
+    //P[i,i]=1
+    //P[i,j]｛=P[i+1,j-1],if(s[i]==s[j])
+    //  =0 ,if(s[i]!=s[j])
+   function dynamicPlan(s){
+		var len = s.length;
+		var arr = new Array(len);
+		var start = 0;
+		var longestSubLen = 0;
+		for(var i = 0; i < len; i++){
+			arr[i] = new Array(len);
+			arr[i][i] = true;
+		}
+		
+		for(var i = 0; i < len - 1; i++){
+			if(s[i] === s[i+1]){
+				arr[i][i+1] = true;
+				start = i;
+				longestSubLen = 2;
+			}
+		}
+		
+		for(var subLen = 3; subLen < len; subLen++){ //字串长度
+			for(var i = 0; i < len - 3; i++){ //字串起始位置
+				var j = i + subLen - 1; 
+				if(arr[i+1][j-1] && s[i] === s[j]){
+					arr[i][j] = true;
+					longestSubLen = subLen;
+					start = i;
+				}
+			}
+		}
+		
+		return s.slice(start, start + longestSubLen);
+   }
+   
+   //3.中心扩展
+   //把给定的字符串的每一个字母当做中心，向两边扩展，这样来找最长的子回文串。算法复杂度为O(n2)。
+   //区分奇偶
+   function centerExtend(s){
+		var len = s.length;
+		var longestSubLen = 0, start = 0;
+		
+		for(var i = 0; i < len; i++){ //长度为奇数
+			var l = i - 1, r = i + 1;
+			while( l >= 0 && r < len && s[l] === s[r]){
+				if ( r - l + 1 > longestSubLen ){
+					longestSubLen = r - l + 1;
+					start = l;
+				}	
+				l--;
+				r++;
+			}
+		}
+		
+		for(var i = 0; i < len; i++){ //长度为偶数
+			var l = i , r = i + 1;
+			while( l >= 0 && r < len && s[l] === s[r]){
+				if ( r - l + 1 > longestSubLen ){
+					longestSubLen = r - l + 1;
+					start = l;
+				}	
+				l--;
+				r++;
+			}
+		}
+		
+		return s.slice(start, start + longestSubLen);
+   }
+   
+   //4.Manacher法
+   //Manacher法只能解决例如aba这样长度为奇数的回文串，对于abba这样的不能解决，于是就在里面添加特殊字符(如：“#”，使abba变为a#b#b#a。
+   //这个算法就是利用已有回文串的对称性来计算的，具体算法复杂度为O(n)
+   /*
+   Manacher算法处理出以每个字符为中心所产生的回文半径的长度，
+   然后将每个回文串的按照长度从长到短倒着插入到字段树中，
+   插入的过程中访问hash表是否已经插入过回文串，
+   hash表直接保存着上次回文串插入的位置，这样就可以O(1)的时间找到要插入的位置，
+   然后将多出来的长度插入即可。由于上题中已经得知回文串的个数最多是O(N)的，
+   因此这里插入字段树的次数也会控制在O(N)以内。最后通过遍历一次字典树得到最终的结果，
+   从某节点出发，其子树上的数量将要累加到父亲节点上，
+   因为这个子节点都包括这个父亲节点所表示的回文串。
+   另外奇数串和偶数串需要分开处理。
+   */
+   function manacher(s){
+		var sLen = s.length;
+		var newStr = '';
+		var rad = [];
+		if(sLen === 0 ){
+			return '';
+		}
+		
+		for(var i = 0; i < sLen - 1; i++){
+			newStr += s[i] + '#';
+		}
+		
+		s = newStr + s[i];
+		
+		sLen = 2 * sLen - 1;
+        rad[0] = 0;
+		for(var i = 1, j = 1 ,k = 0; i < sLen; i = i + k){
+			while( i - j >= 0 && i + j < sLen && s[i-j] === s[i+j]) {			
+				j++;  
+			}
+			rad[i] = j-1; 
+
+			for( k = 1; k <= rad[i] && rad[i-k] != rad[i] - k; k++){
+			   //镜像,遇到rad[i-k]=rad[i]-k停止，这时不用从j=1开始比较  
+				rad[i+k] = Math.min(rad[i-k], rad[i]-k);  
+			}
+			j = Math.max(j-k,0);//更新j  
+		}
+		
+		var max = 0;
+		var center = 0;
+
+		for(i = 0 ; i < sLen; i++){
+            if(rad[i] > max || (rad[i] === max && s[i] === '#') ){
+                max = rad[i];
+				center = i;
+			}
+		}
+		return s.substr(center - max, 2*max+1).replace(/#/g,'');
+   }
+
+
+   var longestPalindrome = function(s) {
+		var str = manacher(s);
+		return str;
+   };
+   
