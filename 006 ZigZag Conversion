@@ -1,0 +1,40 @@
+/**
+ * @param {string} s
+ * @param {number} numRows
+ * @return {string}
+ */
+var convert = function (s, numRows) {
+        var sLen = s.length;
+        var newStr = '';
+        var up = false;
+
+        if (sLen <= 2 || numRows < 2) {
+            return s;
+        }
+
+        for(var r = 0; r < numRows ; r++) {
+            var i = 0, j = 1;
+            if (r === 0 || r === numRows - 1) {
+                while (i < sLen) {
+                    i = 2 * (numRows - 1) * (j - 1) + r;
+                    if(i < sLen){
+                        newStr += s[i];
+                        j++;
+                    }
+                }
+            } else {
+                i = r;
+                
+                while (i < sLen) {
+                    newStr += s[i];
+                    if (j % 2) {
+                        i = i + 2 * (numRows - r - 1);
+                    } else {
+                        i = i + 2 * r;
+                    }
+                    j++;
+                }
+            }
+        }
+        return newStr;
+    };
