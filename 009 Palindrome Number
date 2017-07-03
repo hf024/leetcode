@@ -1,0 +1,48 @@
+/**
+ * @param {number} x
+ * @return {boolean}
+ */
+function reverseStr(s){
+    var sLen = s.length;
+    var newStr = '';
+    if(sLen === 0){
+        return s;
+    }
+    
+    for(var i = sLen - 1; i >= 0; i--){
+        newStr += s[i];
+    }
+    
+    return newStr;
+}
+
+function reverseNumber(x){
+    var negFlag = false;
+    var absNumber = 0;
+    var maxNumber = 2147483647;
+
+    if(x < 0){
+        negFlag = true;
+        absNumber = parseInt(reverseStr((-x).toString()));
+    }else{
+        absNumber = parseInt(reverseStr(x.toString()));
+    }
+        
+	if(!negFlag&&absNumber > 2147483647 || (negFlag && absNumber > 2147483648)){
+        absNumber = 0;
+    }
+    
+    return negFlag? -absNumber: absNumber;
+}
+
+var isPalindrome = function(x) {
+    if ( x < 0 ){
+        return false;
+    }
+    
+    if(x === reverseNumber(x)){
+        return true;
+    }else{
+        return false;
+    }
+};
