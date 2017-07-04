@@ -1,0 +1,28 @@
+    /*
+     * @param {string} s
+     * @param {string} p
+     * @return {boolean}
+     */
+    function matchStr(s,i,p,j) {
+        if (s.length === i) {
+            return p.length === j || (p.length > j+1 && p[j+1] === '*' && matchStr(s, i, p, j+2));
+        }
+
+        if (p.length > j+1 && p[j+1] === '*') {
+            if (s[i] === p[j] || p[j] === '.') {
+                return matchStr(s, i+1, p, j) || matchStr(s, i, p, j+2);
+            } else {
+                return matchStr(s, i, p, j+2);
+            }
+        } else {
+            if (s[i] === p[j] || p[j] === '.') {
+                return matchStr(s, i+1, p, j+1);
+            } else {
+                return false;
+            }
+        }
+    }
+
+    var isMatch = function (s, p) {
+        return matchStr(s,0,p,0);
+    };
