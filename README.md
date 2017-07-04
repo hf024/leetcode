@@ -1,2 +1,2 @@
 # leetcode
-记录leetcode之javascript实现
+记录javascript做leetcodet题
